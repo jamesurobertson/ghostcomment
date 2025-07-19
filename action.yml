@@ -1,0 +1,47 @@
+name: 'GhostComment'
+description: 'Extract and post developer-to-reviewer comments from code to GitHub PR discussions'
+author: 'GhostComment'
+branding:
+  icon: 'message-circle'
+  color: 'blue'
+
+inputs:
+  github-token:
+    description: 'GitHub token for posting comments (use secrets.GITHUB_TOKEN)'
+    required: true
+  config-path:
+    description: 'Path to GhostComment configuration file'
+    required: false
+    default: '.ghostcommentrc'
+  fail-on-found:
+    description: 'Fail the action if ghost comments are found'
+    required: false
+    default: 'false'
+  clean-mode:
+    description: 'Whether to remove ghost comments after posting (true/false)'
+    required: false
+    default: 'true'
+  dry-run:
+    description: 'Run in dry-run mode without making actual changes'
+    required: false
+    default: 'false'
+  verbose:
+    description: 'Enable verbose logging'
+    required: false
+    default: 'false'
+
+outputs:
+  comments-found:
+    description: 'Number of ghost comments found'
+  comments-posted:
+    description: 'Number of comments successfully posted'
+  comments-skipped:
+    description: 'Number of comments skipped (not in diff)'
+  comments-failed:
+    description: 'Number of comments that failed to post'
+  comments-cleaned:
+    description: 'Number of comments removed from files'
+
+runs:
+  using: 'node20'
+  main: 'dist/action.js'

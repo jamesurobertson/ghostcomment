@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2020",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "types": ["jest", "node"],
+    "strict": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitAny": false,
+    "strictFunctionTypes": false
+  },
+  "include": [
+    "tests/**/*",
+    "src/**/*"
+  ]
+}
