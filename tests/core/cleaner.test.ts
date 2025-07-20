@@ -5,7 +5,7 @@
 import { jest, describe, beforeEach, it, expect } from '@jest/globals';
 import { promises as fs } from 'fs';
 import { removeComments, validateCommentsForCleaning, DEFAULT_CLEAN_OPTIONS } from '../../src/core/cleaner.js';
-import { GhostComment, GhostCommentError, GhostCommentErrorType } from '../../src/models/comment.js';
+import { GhostComment } from '../../src/models/comment.js';
 import { mockGhostComments, mockCwd, createTestFileWithComments } from '../fixtures/index.js';
 
 // Mock fs
@@ -83,7 +83,7 @@ describe('Cleaner', () => {
         },
         {
           filePath: 'src/test.ts',
-          lineNumber: 4,
+          lineNumber: 5,
           content: 'Second comment',
           prefix: '//_gc_',
           originalLine: '  //_gc_ Second comment',
@@ -146,7 +146,7 @@ describe('Cleaner', () => {
     it('should create backups when enabled', async () => {
       const testComments: GhostComment[] = [mockGhostComments[0]!];
       const fileContent = createTestFileWithComments([
-        { line: 3, content: 'Test comment' },
+        { line: 5, content: 'Removed unused legacy logic' },
       ]);
       
       mockFs.readFile.mockResolvedValue(fileContent);
@@ -164,7 +164,7 @@ describe('Cleaner', () => {
     it('should skip backups when disabled', async () => {
       const testComments: GhostComment[] = [mockGhostComments[0]!];
       const fileContent = createTestFileWithComments([
-        { line: 3, content: 'Test comment' },
+        { line: 5, content: 'Removed unused legacy logic' },
       ]);
       
       mockFs.readFile.mockResolvedValue(fileContent);
@@ -182,7 +182,7 @@ describe('Cleaner', () => {
     it('should handle dry run mode', async () => {
       const testComments: GhostComment[] = [mockGhostComments[0]!];
       const fileContent = createTestFileWithComments([
-        { line: 3, content: 'Test comment' },
+        { line: 5, content: 'Removed unused legacy logic' },
       ]);
       
       mockFs.readFile.mockResolvedValue(fileContent);
@@ -217,8 +217,11 @@ describe('Cleaner', () => {
       
       mockFs.readFile.mockResolvedValue(fileContent);
 
-      await expect(removeComments(testComments, DEFAULT_CLEAN_OPTIONS, mockCwd))
-        .rejects.toThrow(GhostCommentError);
+      const result = await removeComments(testComments, DEFAULT_CLEAN_OPTIONS, mockCwd);
+      
+      expect(result.hasErrors).toBe(true);
+      expect(result.errorFiles).toContain('src/test.ts');
+      expect(result.commentsRemoved).toBe(0);
     });
 
     it('should handle line number out of range', async () => {
@@ -235,8 +238,11 @@ describe('Cleaner', () => {
       const fileContent = 'function test() {\n  return true;\n}';
       mockFs.readFile.mockResolvedValue(fileContent);
 
-      await expect(removeComments(testComments, DEFAULT_CLEAN_OPTIONS, mockCwd))
-        .rejects.toThrow(GhostCommentError);
+      const result = await removeComments(testComments, DEFAULT_CLEAN_OPTIONS, mockCwd);
+      
+      expect(result.hasErrors).toBe(true);
+      expect(result.errorFiles).toContain('src/test.ts');
+      expect(result.commentsRemoved).toBe(0);
     });
 
     it('should restore backups on error when restoreOnError is enabled', async () => {
@@ -285,7 +291,7 @@ describe('Cleaner', () => {
     it('should preserve file permissions and timestamps', async () => {
       const testComments: GhostComment[] = [mockGhostComments[0]!];
       const fileContent = createTestFileWithComments([
-        { line: 3, content: 'Test comment' },
+        { line: 5, content: 'Removed unused legacy logic' },
       ]);
       
       mockFs.readFile.mockResolvedValue(fileContent);
@@ -307,7 +313,7 @@ describe('Cleaner', () => {
     it('should remove backup files when removeBackups is enabled', async () => {
       const testComments: GhostComment[] = [mockGhostComments[0]!];
       const fileContent = createTestFileWithComments([
-        { line: 3, content: 'Test comment' },
+        { line: 5, content: 'Removed unused legacy logic' },
       ]);
       
       mockFs.readFile.mockResolvedValue(fileContent);
@@ -423,7 +429,7 @@ describe('Cleaner', () => {
         },
       ];
 
-      mockFs.access.mockImplementation((filePath: string) => {
+      mockFs.access.mockImplementation((filePath: any) => {
         if (filePath.includes('missing.ts')) {
           return Promise.reject(new Error('File not found'));
         }
@@ -457,14 +463,17 @@ describe('Cleaner', () => {
 
       mockFs.readFile.mockRejectedValue(new Error('File system error'));
 
-      await expect(removeComments(testComments, DEFAULT_CLEAN_OPTIONS, mockCwd))
-        .rejects.toThrow(GhostCommentError);
+      const result = await removeComments(testComments, DEFAULT_CLEAN_OPTIONS, mockCwd);
+      
+      expect(result.hasErrors).toBe(true);
+      expect(result.errorFiles).toContain('src/test.ts');
+      expect(result.commentsRemoved).toBe(0);
     });
 
     it('should handle backup creation errors', async () => {
       const testComments: GhostComment[] = [mockGhostComments[0]!];
       const fileContent = createTestFileWithComments([
-        { line: 3, content: 'Test comment' },
+        { line: 5, content: 'Removed unused legacy logic' },
       ]);
       
       mockFs.readFile.mockResolvedValue(fileContent);
@@ -475,8 +484,11 @@ describe('Cleaner', () => {
         createBackups: true,
       };
 
-      await expect(removeComments(testComments, options, mockCwd))
-        .rejects.toThrow(GhostCommentError);
+      const result = await removeComments(testComments, options, mockCwd);
+      
+      expect(result.hasErrors).toBe(true);
+      expect(result.errorFiles).toContain('src/test.ts');
+      expect(result.commentsRemoved).toBe(0);
     });
   });
 });
