@@ -5,7 +5,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Build outputs
-# Note: dist/ is included for GitHub Actions
+# Note: dist/ and dist-action/ are included for GitHub Actions
 *.tsbuildinfo
 
 # Environment variables
@@ -52,5 +52,5 @@ Thumbs.db
 tmp/
 temp/
 
-# GitHub Actions artifacts
-/dist-action/
+# GitHub Actions artifacts (commented out - we need dist-action for published action)
+# /dist-action/
