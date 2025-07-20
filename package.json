@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "bundle": "ncc build dist/index.js -o dist/",
+    "bundle": "npm run build && ncc build dist/action.js -o dist-action/ --source-map --license licenses.txt",
     "dev": "tsc --watch",
     "test": "jest",
     "test:coverage": "jest --coverage",
@@ -19,8 +19,8 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write src/**/*.ts",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist/",
-    "prepublishOnly": "npm run clean && npm run build"
+    "clean": "rm -rf dist/ dist-action/",
+    "prepublishOnly": "npm run clean && npm run bundle"
   },
   "keywords": [
     "github",
@@ -49,7 +49,7 @@
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
-    "@vercel/ncc": "^0.38.1",
+    "@vercel/ncc": "^0.38.3",
     "eslint": "^8.53.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
