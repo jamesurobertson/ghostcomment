@@ -107,9 +107,8 @@ async function run() {
                 token: githubToken,
                 debug: verbose,
             });
-            // Test connection
-            await githubClient.testConnection();
-            core.info('✅ GitHub connection successful');
+            // Skip connection test - proceed directly to posting comments
+            core.info('🔗 GitHub client initialized');
             const postResult = await githubClient.postReviewComments(comments, gitContext);
             core.setOutput('comments-posted', postResult.posted.toString());
             core.setOutput('comments-skipped', postResult.skipped.toString());
